@@ -1,0 +1,9 @@
+name: TestBedrockServerSelector
+version: '${version}'
+main: com.gmail.necnionch.myplugin.testbedrockserverselector.bukkit.TestBedrockServerSelector
+api-version: 1.13
+depend: [ floodgate ]
+authors: [ Necnion8 ]
+
+commands:
+  begui: {}

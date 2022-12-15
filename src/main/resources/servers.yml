@@ -1,0 +1,12 @@
+life:
+  # Optional
+  # Sort Index
+  index: 0
+
+  # Optional
+  # Display Name
+  display: "生活サーバー"
+
+  # Optional
+  # Button Image URL
+  image_url: "https://github.com/GeyserMC.png?size=200"
