@@ -1,5 +1,6 @@
 package com.gmail.necnionch.myplugin.testbedrockserverselector.bukkit;
 
+import com.gmail.necnionch.myplugin.testbedrockserverselector.bukkit.config.Configuration;
 import com.gmail.necnionch.myplugin.testbedrockserverselector.bukkit.config.ServerConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,22 +13,33 @@ import org.geysermc.cumulus.form.SimpleForm;
 import org.geysermc.cumulus.util.FormImage;
 import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 public final class TestBedrockServerSelector extends JavaPlugin {
-    private final ServerConfiguration config = new ServerConfiguration(this);
+    private final ServerConfiguration serverConfig = new ServerConfiguration(this);
+    private final Configuration config = new Configuration(this);
 
     @Override
     public void onEnable() {
         config.load();
+        serverConfig.load();
         Optional.ofNullable(getCommand("begui")).ifPresent(cmd -> cmd.setExecutor(this::execute));
     }
 
+    @NotNull
+    public Configuration getMainConfig() {
+        return config;
+    }
+
+    public ServerConfiguration getServerConfig() {
+        return serverConfig;
+    }
+
     public List<ServerConfiguration.Entry> getServers() {
-        return config.getEntries();
+        return serverConfig.getEntries();
     }
 
 
@@ -36,7 +48,7 @@ public final class TestBedrockServerSelector extends JavaPlugin {
             return true;
 
         if (!openSelector(((Player) sender))) {
-            Bukkit.dispatchCommand(sender, "gui");  // fallback
+            Bukkit.dispatchCommand(sender, config.getNonBedrockCommandFallback());
         }
         return true;
     }
@@ -67,7 +79,7 @@ public final class TestBedrockServerSelector extends JavaPlugin {
         b.validResultHandler(response -> {
             ServerConfiguration.Entry server = servers.get(response.clickedButtonId());
             try {
-                if (!Bukkit.dispatchCommand(player, "server " + server.getName()))
+                if (!executeServerCommand(player, server.getName()))
                     player.sendMessage(ChatColor.RED + "移動できませんでした");
 
             } catch (CommandException e) {
@@ -76,6 +88,12 @@ public final class TestBedrockServerSelector extends JavaPlugin {
             }
         });
         return b.build();
+    }
+
+    public boolean executeServerCommand(Player player, String serverName) throws CommandException {
+        String command = config.formatServerCommand(serverName, player.getName());
+        CommandSender sender = config.isServerCommandConsole() ? Bukkit.getConsoleSender() : player;
+        return Bukkit.dispatchCommand(sender, command);
     }
 
 }

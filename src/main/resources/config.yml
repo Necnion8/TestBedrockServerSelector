@@ -1,0 +1,5 @@
+
+# values: server, player
+server-command: server {server}
+server-command-in-console: false
+non-bedrock-fallback-command: gui
