@@ -27,7 +27,7 @@ public final class TestBedrockServerSelector extends JavaPlugin {
     }
 
     public List<ServerConfiguration.Entry> getServers() {
-        return Collections.unmodifiableList(config.getEntries());
+        return config.getEntries();
     }
 
 
